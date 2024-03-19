@@ -18,11 +18,12 @@ from iminuit import Minuit, cost
 arrtheta = [180,170,160,150,140,130,120,110,100] # FILL
 # arrtheta = [0,10,20,30,40,50,60,70,80] # FILL
 arrthetarad = [((180 - t) * 2 * np.pi) / 360 for t in arrtheta]
-# arrthetarad_sorted = list(reversed(arrthetarad))
-
+arrthetarad = arrthetarad[1:-1]
 
 arrs1 = [4.3,3.43,1.93,0.71,0.22,0.07,0.03,0.02,0] # FILL # ATTACCATO
+arrs1 = arrs1[1:-1]
 arrs2 = [2.17,1.98,1.1,0.42,0.13,0.04,0,0,0] # FILL #STACCATO
+arrs2 = arrs2[1:-1]
 serrors = np.ones_like(arrs1) * 0.09 # TODO
 
 
@@ -50,7 +51,7 @@ def interp_cos(x, y, yerr, func = model_cos):
 
 def interp_ellisse(x, y, yerr, func = model_ellisse):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, -1, -1)
+    m = Minuit(my_cost, 1, 1)
     m.migrad()
     m.hesse()
     return m
