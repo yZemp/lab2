@@ -1,0 +1,11 @@
+import numpy as np
+import random
+import scipy as sp
+from scipy.stats import norm, chi2
+import matplotlib.pyplot as plt
+from iminuit import Minuit, cost
+import sys
+
+import randgen
+import my_stats
+import funclib

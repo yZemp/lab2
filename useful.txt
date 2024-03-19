@@ -1,0 +1,32 @@
+m.fmin.reduced_chi2 == pvalues
+
+np.polyval(x, n) == polinomio di grado n + 1
+
+from scipy.stats import chi2 
+1 - chi2.cdf(VALORE_Q2, df = ndof) == pvalue
+
+
+# Global characteristics of the fit
+m.valid
+# Q squared
+m.fval
+# Degrees of freedom
+m.ndof
+# P-value (compatibility)
+1. - chi2.cdf(my_minuit.fval, df = my_minuit.ndof)
+
+
+lines = np.loadtxt("data.dat", comments = "#", delimiter = ",", unpack = False)
+
+x,y = [], []
+with open('data.dat') as f:
+    for l in f:
+        row = l.split()
+        x.append(row[0])
+        y.append(row[1])
+
+# Fattoriale:
+np.math.factorial()
+
+# Stampa formattata:
+print(f"VALUE_EXPRESSION:.2f")
