@@ -4,13 +4,18 @@ import scipy as sp
 from scipy.stats import norm, chi2
 import matplotlib.pyplot as plt
 from iminuit import Minuit, cost
-# import sys
-# sys.path.append("../..")
+import sys
+sys.path.append(".")
 
 # import randgen
-# import my_stats
+import my_stats
 # import funclib
 
+#####################################################################
+# Finding the error
+deltas = [.8, 1.1, .8, .6, .9, .9, .6, .7, .75, .75, .75, .6, .7, .75, .65]
+stats = my_stats.stat(deltas)
+print(stats["mu"], stats["stdDev"])
 
 #####################################################################
 # Data
@@ -18,10 +23,6 @@ from iminuit import Minuit, cost
 arrd_max = [11.2,12,12.8,13.9,14.5,15.4,16.3,16.9,18.3,19.8,21.3,22.8,27.1,31.5,35.7,40.1,41.4,44.4,45.6,48.7,50.1,51.4] # FILL
 arrs_max = [3.82,3.18,3.38,3.04,3.02,3.01,2.88,3,2.88,2.84,2.76,2.68,2.48,2.24,2.06,1.85,1.77,1.61,1.5,1.57,1.55,1.51] # FILL
 serrors_max = np.ones_like(arrs_max) * .09 # TODO
-# print(serrors_max)
-# [0.09, 0.09, 0.09, ...]
-errperc = .09 / arrd_max[0]
-serrors_max = [errperc * arrd_max[i] for i in range(len(serrors_max))]
 
 
 #####################################################################
