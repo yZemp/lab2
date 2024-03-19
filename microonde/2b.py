@@ -71,39 +71,44 @@ def trick_quad_interp_V2(x, y, yerr, func = trick_quad_model_V2):
 def main():
     # scatter(arrthetastar_rad, arrs, serrors)
 
-    print("----------------------------------------------- M1 -----------------------------------------------")
-    m1 = quad_interp(arrthetastar_rad, arrs, serrors)
-    print(m1.migrad())
-    print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
-    xmax = - m1.values["B"] / (2 * m1.values["A"])
-    print(f"Theta (Rad) minimo:\t{xmax}")
-    print(f"Theta (°) minimo:\t{(360 * xmax) / (2 * np.pi)}")
+    # print("----------------------------------------------- M1 -----------------------------------------------")
+    # m1 = quad_interp(arrthetastar_rad, arrs, serrors)
+    # print(m1.migrad())
+    # print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
+    # xmin = - m1.values["B"] / (2 * m1.values["A"])
+    # print(f"Theta (Rad) minimo:\t{xmin}")
+    # print(f"Theta (°) minimo:\t{(360 * xmin) / (2 * np.pi)}")
 
 
     print("----------------------------------------------- M2 -----------------------------------------------")
     m2 = trick_quad_interp(arrthetastar_rad, arrs, serrors)
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
-    xmax = m2.values["xv"]
-    xmax_err = m2.errors["xv"]
-    print(f"Theta (Rad) minimo:\t{xmax} +- {xmax_err}")
-    print(f"Theta (°) minimo:\t{(360 * xmax) / (2 * np.pi)} +- {(360 * xmax_err) / (2 * np.pi)}")
+    xmin = m2.values["xv"]
+    xmin_err = m2.errors["xv"]
+    print(f"Theta (Rad) minimo:\t{xmin} +- {xmin_err}")
+    print(f"Theta (°) minimo:\t{(360 * xmin) / (2 * np.pi)} +- {(360 * xmin_err) / (2 * np.pi)}")
 
-    print("----------------------------------------------- M3 -----------------------------------------------")
-    m3 = trick_quad_interp_V2(arrthetastar_rad, arrs, serrors)
-    print(m3.migrad())
-    print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
-    xmax = m3.values["xv"]
-    xmax_err = m3.errors["xv"]
-    print(f"Theta (Rad) minimo:\t{xmax} +- {xmax_err}")
-    print(f"Theta (°) minimo:\t{(360 * xmax) / (2 * np.pi)} +- {(360 * xmax_err) / (2 * np.pi)}")
+    # print("----------------------------------------------- M3 -----------------------------------------------")
+    # m3 = trick_quad_interp_V2(arrthetastar_rad, arrs, serrors)
+    # print(m3.migrad())
+    # print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
+    # xmin = m3.values["xv"]
+    # xmin_err = m3.errors["xv"]
+    # print(f"Theta (Rad) minimo:\t{xmin} +- {xmin_err}")
+    # print(f"Theta (°) minimo:\t{(360 * xmin) / (2 * np.pi)} +- {(360 * xmin_err) / (2 * np.pi)}")
 
-    plt.errorbar(arrthetastar_rad, arrs, serrors)
+    plt.errorbar(arrthetastar_rad, arrs, serrors, linestyle = "", c = "#0e0e0e", marker = "o")
+
+    plt.vlines(xmin, -.1, .8, linestyles = "dotted", label = f"Theta max (°) = {(360 * xmin) / (2 * np.pi):.1f} ± {(360 * xmin_err) / (2 * np.pi):.1f}")
+
+    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
+
     lnsp = np.linspace(arrthetastar_rad[0], arrthetastar_rad[-1], 10_000)
-    plt.plot(lnsp, quad_model(lnsp, *m1.values), label = "Normale")
-    plt.plot(lnsp, trick_quad_model(lnsp, *m2.values), label = "Trick")
-    plt.plot(lnsp, trick_quad_model_V2(lnsp, *m3.values), label = "Trick V2")
-    plt.legend()
+    # plt.plot(lnsp, quad_model(lnsp, *m1.values), label = "Normale")
+    plt.plot(lnsp, trick_quad_model(lnsp, *m2.values), label = "", c = "#049304")
+    # plt.plot(lnsp, trick_quad_model_V2(lnsp, *m3.values), label = "Trick V2")
+    plt.legend(loc = "upper left")
     plt.show()
 
 

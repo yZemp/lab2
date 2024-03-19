@@ -79,13 +79,15 @@ def main():
 
     plt.axes(xlabel = "Theta* [Rad]", ylabel = "Segnale [V]")
 
-    plt.errorbar(arrthetastar_rad, arrs, serrors)
+    plt.errorbar(arrthetastar_rad, arrs, serrors, linestyle = "", c = "#0e0e0e", marker = "o")
 
-    plt.vlines(xmax, 3.9, 4.5, linestyles = "dotted", label = "Theta max")
+    plt.vlines(xmax, 3.9, 4.5, linestyles = "dotted", label = f"Theta max (°) = {(360 * xmax) / (2 * np.pi):.1f} ± {(360 * xmax_err) / (2 * np.pi):.1f}")
 
-    lnsp = np.linspace(arrthetastar_rad[0], arrthetastar_rad[-1], 10_000)
+    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
+
+    lnsp = np.linspace(arrthetastar_rad[0] - .05, arrthetastar_rad[-1] + .01, 10_000)
     # plt.plot(lnsp, quad_model(lnsp, *m1.values), label = "Normale")
-    plt.plot(lnsp, trick_quad_model(lnsp, *m2.values), label = "")
+    plt.plot(lnsp, trick_quad_model(lnsp, *m2.values), label = "", c = "#049304")
     plt.legend()
     plt.show()
 

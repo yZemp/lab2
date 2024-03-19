@@ -87,7 +87,7 @@ def main():
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
-    plt.errorbar(arrd_max, arrs_max, serrors_max)
+    plt.errorbar(arrd_max, arrs_max, serrors_max, linestyle = "", c = "#0e0e0e", marker = "o")
 
     lnsp = np.linspace(arrd_max[0], arrd_max[-1], 10_000)
     plt.plot(lnsp, model_max_1(lnsp, * m1.values), label = "1 / d\n model_1")
