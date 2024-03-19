@@ -48,15 +48,15 @@ def interp_1(x, y, yerr, func = model_1):
 def main():
 
     print("----------------------------------------------- M1 -----------------------------------------------")
-    m1 = interp_1(arrtheta_rad, arrs, serrors)
+    m1 = interp_1(arri_rad, arrs, serrors)
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
     
-    plt.errorbar(arrtheta_rad, arrs, serrors, linestyle = "", c = "#050560", marker = "o")
+    plt.errorbar(arri_rad, arrs, serrors, linestyle = "", c = "#050560", marker = "o")
     # plt.errorbar(arri_rad, arrs, serrors, linestyle = "", c = "#05f2a1", marker = "o")
     
-    lnsp = np.linspace(arrtheta_rad[0], arrtheta_rad[-1], 10_000)
+    lnsp = np.linspace(arri_rad[0], arri_rad[-1], 10_000)
     plt.plot(lnsp, model_1(lnsp, * m1.values), label = "1 / d * cos")
     plt.legend()
     plt.show()
