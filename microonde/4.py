@@ -29,7 +29,7 @@ serrors = np.ones_like(arrs) * 0.09 # TODO
 # Functions
 
 def model_1(x, A, B, omega, phi):
-    return  A * np.cos(omega * x + phi) * (1 / x) + B
+    return  A * np.power(np.cos(omega * x + phi), 2) * (1 / x) + B
 
 
 #####################################################################
@@ -38,6 +38,7 @@ def model_1(x, A, B, omega, phi):
 def interp_1(x, y, yerr, func = model_1):
     my_cost = cost.LeastSquares(x, y, yerr, func)
     m = Minuit(my_cost, 10, 1, 10, np.pi / 2)
+    # m.limits["A"] = (0, 10_000)
     m.migrad()
     m.hesse()
     return m
