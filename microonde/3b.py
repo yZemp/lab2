@@ -83,7 +83,6 @@ def main():
     print(m3.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
     
-
     plt.errorbar(arrd, arrs, serrors, linestyle = "", c = "black", marker = "o")
     
     lnsp = np.linspace(arrd[0], arrd[-1], 10_000)
