@@ -36,6 +36,9 @@ def model_max(x, A, B):
 def model_max_2(x, A, B):
     return  A * (1 / np.power(x, 2)) + B
 
+def model_pazzo(x, A, B, C, D, omega, phi):
+    return  A * np.cos(omega * x + phi) + B * np.power(x, -1) + C * np.power(x, -2) + D
+
 # Usable for both d and d^2
 # def model_all(x, A, B, eta, phi):
 #     return  A * np.cos(eta * x + phi) * (1 / x) + B

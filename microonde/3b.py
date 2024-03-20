@@ -17,11 +17,12 @@ from iminuit import Minuit, cost
 
 arrd = [0.185,0.2,0.215,0.229,0.243,0.258,0.271,0.286,0.301,0.315,0.329] # FILL
 arrd = arrd[0: -2]
+arrd = [d * 2 for d in arrd]
 # arrd = [d * 2 for d in arrd]
 
 arrs = [3.6,3.57,3.51,3.4,3.37,3.28,3.23,3.14,3.16,3.25,3.26] # FILL
 arrs = arrs[0:-2]
-serrors = np.ones_like(arrs) * 0.09 # TODO
+serrors = np.ones_like(arrs) * 0.09 * 2# TODO
 
 
 #####################################################################
