@@ -81,17 +81,19 @@ def main():
     print(mj.migrad())
     print(f"Pval:\t{1. - chi2.cdf(mj.fval, df = mj.ndof)}")
     
+    plt.axes(xlabel = "d [cm]", ylabel = "Segnale [V]")
+
     plt.errorbar(arrd, arrs, serrors, linestyle = "", c = "#0e0e0e", marker = "o")
 
     lnsp = np.linspace(arrd[0], arrd[-1], 10_000)
     # plt.plot(lnsp, model_max_1(lnsp, * m1.values), label = "1 / d\n model_1")
     # plt.plot(lnsp, model_max_2(lnsp, * m2.values), label = "1 / d^2\n model_2")
 
-    # plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(mcos.fval, df = mcos.ndof):.4f}")
-    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(mj.fval, df = mj.ndof):.4f}")
+    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(mcos.fval, df = mcos.ndof):.4f}")
+    # plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(mj.fval, df = mj.ndof):.4f}")
 
-    # plt.plot(lnsp, model_cos(lnsp, * mcos.values), label = "Fronte d'onda piano", color = "#7525e5")
-    plt.plot(lnsp, model_jack(lnsp, * mj.values), label = "Fronte d'onda sferico/ellittico", color = "#7525e5")
+    plt.plot(lnsp, model_cos(lnsp, * mcos.values), label = "Fronte d'onda piano", color = "#7525e5")
+    # plt.plot(lnsp, model_jack(lnsp, * mj.values), label = "Fronte d'onda sferico/ellittico", color = "#7525e5")
     plt.legend()
     plt.show()
 
