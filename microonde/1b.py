@@ -30,8 +30,8 @@ serrors = np.ones_like(arrs1) * 0.09 # TODO
 #####################################################################
 # Functions
 
-def model_cos(x, A, B):
-    return  A * np.cos(x) + B
+def model_cos(x, A, B, omega, phi):
+    return A * np.cos(omega * x + phi) + B
 
 # def model_cos_corretto(x, A, B, omega, phi):
 #     return  A * np.cos(omega * x + phi) + B
@@ -44,7 +44,7 @@ def model_ellisse(x, a, b):
     
 def interp_cos(x, y, yerr, func = model_cos):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, -1, -1)
+    m = Minuit(my_cost, -1, -1, 1, 0.)
     m.migrad()
     m.hesse()
     return m
@@ -90,15 +90,23 @@ def main():
 
     plt.errorbar(arrthetarad, arrs1, serrors, linestyle = "", marker = "o", c = "#05e545")
     plt.errorbar(arrthetarad, arrs2, serrors, linestyle = "", marker = "o", c = "#e50545")
-    plt.vlines(np.pi / 2, -1, 3, label = "π/2", linestyle = "dotted")
+    # plt.vlines(np.pi / 2, -1, 3, label = "π/2", linestyle = "dotted")
 
     lnsp = np.linspace(arrthetarad[0], arrthetarad[-1], 10_000)
 
-    # plt.plot(lnsp, model_cos(lnsp, *m1.values), label = "Attaccato")
-    # plt.plot(lnsp, model_cos(lnsp, *m2.values), label = "Staccato")
+    plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
+    plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
 
-    plt.plot(lnsp, model_ellisse(lnsp, *m3.values), label = "Attaccato")
-    plt.plot(lnsp, model_ellisse(lnsp, *m4.values), label = "Staccato")
+    plt.plot(lnsp, model_cos(lnsp, *m1.values), label = "Attaccato")
+    plt.plot(lnsp, model_cos(lnsp, *m2.values), label = "Staccato")
+
+
+    # plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m3.fval, df = m3.ndof):.4f}")
+    # plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m4.fval, df = m4.ndof):.4f}")
+
+
+    # plt.plot(lnsp, model_ellisse(lnsp, *m3.values), label = "Attaccato")
+    # plt.plot(lnsp, model_ellisse(lnsp, *m4.values), label = "Staccato")
 
     plt.legend()
     plt.show()
