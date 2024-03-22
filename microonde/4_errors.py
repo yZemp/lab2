@@ -41,26 +41,15 @@ def interp(x, y, yerr, func = model):
     m.hesse()
     return m
 
-
 #####################################################################
 # Runtime
 
 def main():
-    # scatter(arralpha_rad, arrs, serrors)
-    # scatter(arrcosalpha, arrs, serrors)
-    # scatter(arrcosalpha2, arrs, serrors)
-
-    print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp(arrthetarad, arrs, serrors)
-    print(m1.migrad())
-    print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
-
     plt.axes(xlabel = "Theta [rad]", ylabel = "Segnale [V]")
-
     plt.errorbar(arrthetarad, arrs, serrors, linestyle = "", marker = "o", c = "#050505")
-
     lnsp = np.linspace(arrthetarad[0], arrthetarad[-1], 10_000)
-    plt.plot(lnsp, model(lnsp, *m1.values), label = "Cos", c = "#e52575")
+    plt.plot(lnsp, model(lnsp, *m1.values), label = "", c = "#e52575")
 
     def fitted(x):
         return model(x, *m1.values)
@@ -72,12 +61,16 @@ def main():
     plt.vlines(max1, -.3, 1, label = f"Max 1 (°) = {max1 * 180 / np.pi:.1f}", linestyle = "dotted", color  = "#0099cc")
     plt.vlines(max2, -.3, 1, label = f"Max 2 (°) = {max2 * 180 / np.pi:.1f}", linestyle = "dotted", color  = "#33cc00")
 
-    print(fitted(max1))
-    print(fitted(max2))
 
-    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
+    ymax = fitted(max1)
+    ylow = ymax - 0.09
 
-    # print(max1[1] * 180 /np.pi, max2[1] * 180 / np.pi)
+    def fitted_trasl(x):
+        return fitted(x) - ylow
+
+    xright = funclib.find_zero(fitted_trasl, max1, .8)
+
+    plt.vlines(xright, -.3, 1, color  = "#050505", label = f"{abs(max1 - xright)}")
 
     plt.legend()
     plt.show()
