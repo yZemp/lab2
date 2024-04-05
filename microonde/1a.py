@@ -27,16 +27,16 @@ serrors = np.ones_like(arrs) * 0.09 # TODO
 #####################################################################
 # Functions
 
-def model_1(x, A, B):
-    return  A * np.cos(x) + B
+def model_1(x, A, B, phi):
+    return  A * np.cos(x + phi) + B
 
 
-def model_2(x, A, B):
-    return  A * np.power(np.cos(x), 2) + B
+def model_2(x, A, B, phi):
+    return  A * np.power(np.cos(x + phi), 2) + B
 
 
-def model_3(x, A, B, C):
-    return  A * np.power(np.cos(x), 2) + B * np.cos(x) + C
+def model_3(x, A, B, C, phi):
+    return  A * np.power(np.cos(x + phi), 2) + B * np.cos(x) + C
 
 def scatter(x, y, yerr):
     plt.errorbar(x, y, yerr, linestyle = "", marker = "o", c = "#018040")
@@ -48,22 +48,23 @@ def scatter(x, y, yerr):
     
 def interp_1(x, y, yerr, func = model_1):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 1, 1)
+    m = Minuit(my_cost, 1, 1, -.5)
     m.migrad()
     m.hesse()
     return m
 
 def interp_2(x, y, yerr, func = model_2):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 1, 1)
+    m = Minuit(my_cost, 1, 1, 2)
+    m.limits["phi"] = (0, 100)
     m.migrad()
     m.hesse()
     return m
 
 def interp_3(x, y, yerr, func = model_3):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 1, 1, 1)
-    # m.limits["C"] = (0, .0000000000001)
+    m = Minuit(my_cost, 1, 1, 1, 2)
+    m.limits["phi"] = (0, 100)
     m.migrad()
     m.hesse()
     return m
@@ -101,8 +102,8 @@ def main():
 
     lnsp = np.linspace(arralpha_rad[0], arralpha_rad[-1], 10_000)
     plt.plot(lnsp, model_1(lnsp, *m1.values), label = "cos")
-    plt.plot(lnsp, model_2(lnsp, *m2.values), label = "cos^2")
-    plt.plot(lnsp, model_3(lnsp, *m3.values), label = "cos^2 + cos")
+    plt.plot(lnsp, model_2(lnsp, *m2.values), label = "cos^2", c = "#a51525")
+    plt.plot(lnsp, model_3(lnsp, *m3.values), label = "cos^2 + cos", c = "#35d525")
 
 
     plt.legend()
