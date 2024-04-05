@@ -4,6 +4,10 @@ from iminuit import Minuit, cost
 from scipy.stats import chi2
 import pandas as pd
 
+import sys
+sys.path.append("/home/yzemp/Documents/Programming/lab2")
+# import error_prop_bolde as errpropb
+
 ##########################################################3
 # vars
 
@@ -31,7 +35,8 @@ def propagation(delta):
 
 
 errors = [np.sqrt(propagation(delta)) * .0008 for delta in deltams]
-
+# errors_2 = [errpropb.propagazione_errore(["delta", "alpha"], "sin((deltam + alpha) / 2) / sin(alpha / 2)", [delta, alpha], [[1, 0], [0, 1]], [], []) for delta in deltams]
+# print(errors, errors_2)
 
 ##########################################################3
 # models

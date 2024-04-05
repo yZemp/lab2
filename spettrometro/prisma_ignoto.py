@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from iminuit import Minuit, cost
 from scipy.stats import chi2
 import pandas as pd
+from error_prop_bolde import *
 
 #####################################################################
 # data
