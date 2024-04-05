@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from iminuit import Minuit, cost
 from scipy.stats import chi2
 import pandas as pd
-from error_prop_bolde import *
+# from error_prop_bolde import *
 
 #####################################################################
 # data
@@ -27,12 +27,8 @@ angoli_ignoto = data["radianti"].to_numpy()
 lambdas = [angolo_to_lambda(delta) for delta in angoli_ignoto]
 print(lambdas)
 
-
-def propagation(delta):
-    return np.power(np.cos((delta + alpha) / 2) / (2 * np.sin(alpha / 2)), 2) + np.power((np.sin(alpha + delta / 2)) / (np.cos(alpha) - 1), 2)
-
-lambda_errors = [np.sqrt(propagation(delta)) * .0008 for delta in angoli_ignoto]
-
+#TODO
+lambda_errors = np.ones_like(lambdas) * 1.5
 
 
 
@@ -41,7 +37,7 @@ lambda_errors = [np.sqrt(propagation(delta)) * .0008 for delta in angoli_ignoto]
 
 def main():
 
-    plt.errorbar(lambdas, np.ones_like(lambdas) * 0, xerr = lambda_errors, label = "Linee di emissione", linestyle = "", marker = "o", c = "#151515")
+    plt.errorbar(lambdas, np.ones_like(lambdas) * 0, xerr = lambda_errors, capsize = 2, label = "Linee di emissione", linestyle = "", marker = "", c = "#151515")
 
     
 
