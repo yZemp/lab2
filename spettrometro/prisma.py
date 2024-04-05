@@ -12,15 +12,6 @@ import pandas as pd
 
 alpha = 1.043464486
 
-# lambdas = [404.6563,407.7837,433.9223,434.7494,435.8328,546.0735,576.9598,579.0663]
-# Guesswork sui verde acqua:
-# lambdas = [404.6563,407.7837,433.9223,485.5584,491.6068,546.0735,576.9598,579.0663]
-# lambdas = [404.6563,407.7837,433.9223,546.0735,576.9598,579.0663]
-
-# deltams = [0.8914269155,0.889390698,0.8766643389,0.85856,0.85594,0.8451756903,0.8395760923,0.8384125394]
-# deltams = [0.8914269155,0.889390698,0.8766643389,0.8451756903,0.8395760923,0.8384125394]
-
-
 sheet_id = "1bjtqJHRvWQMS7QxDNb8iBOs0CKm75ioh5B47gZAaU2Y"
 sheet_name = "spettro_hg_prisma"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
@@ -67,7 +58,7 @@ def interp(x, y, yerr, func = cauchy):
 
 def main():
 
-    plt.errorbar(lambdas, ns, errors, label = "Data", linestyle = "", marker = "o", c = "#050505")
+    plt.errorbar(lambdas, ns, errors, label = "Linee di emissione", linestyle = "", marker = "o", c = "#151515")
 
     print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp(lambdas, ns, errors)
@@ -75,7 +66,14 @@ def main():
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
     lnsp = np.linspace(lambdas[0], lambdas[-1], 10_000)
-    plt.plot(lnsp, cauchy(lnsp, *m1.values), label = "Cauchy")
+    plt.plot(lnsp, cauchy(lnsp, *m1.values), label = "Legge di Cauchy", c = "#a515d5")
+
+    plt.xlabel("Lunghezza d\'onda [$\lambda$]")
+    plt.ylabel("Indice di rifrazione")
+
+    plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
+    plt.plot([], [], ' ', label = f"A = {m1.values[0]:.3f} $\pm$ {m1.errors[0]:.3f}")
+    plt.plot([], [], ' ', label = f"B = {m1.values[1]:.0f} $\pm$ {m1.errors[1]:.0f}")
 
     plt.legend()
     plt.show()
