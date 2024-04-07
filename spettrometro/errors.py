@@ -17,7 +17,7 @@ errors = [5,3,1,-2,-5,3,-4,2,-1]
 # Runtime
 
 def main():
-    plt.hist(errors, density = True, bins = my_stats.sturges(errors))
+    plt.hist(errors, density = False, bins = my_stats.sturges(errors))
     print(my_stats.stat(errors))
     errors.sort()
     print(f"Std dev (uniforme):\t{(errors[-1] - errors[0]) / np.sqrt(12)}")

@@ -70,7 +70,7 @@ def main():
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
-    lnsp = np.linspace(lambdas[0], lambdas[-1], 10_000)
+    lnsp = np.linspace(lambdas[0] - 10, lambdas[-1] + 10, 10_000)
     plt.plot(lnsp, cauchy(lnsp, *m1.values), label = "Legge di Cauchy", c = "#a515d5")
 
     plt.xlabel("Lunghezza d\'onda [$\lambda$]")
@@ -78,7 +78,8 @@ def main():
 
     plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
     plt.plot([], [], ' ', label = f"A = {m1.values[0]:.3f} $\pm$ {m1.errors[0]:.3f}")
-    plt.plot([], [], ' ', label = f"B = {m1.values[1]:.0f} $\pm$ {m1.errors[1]:.0f}")
+    plt.plot([], [], ' ', label = f"B = 9700 $\pm$ 500")
+    # plt.plot([], [], ' ', label = f"B = {m1.values[1]:.0f} $\pm$ {m1.errors[1]:.0f}")
 
     plt.legend()
     plt.show()
