@@ -27,8 +27,12 @@ def main():
 
     plt.errorbar(indexes, lambdas, errors, linestyle = "", marker = "o", c = "#7505a5", label = "Lambda misurati")
 
+
+    ax = plt.gca()
+    ax.get_xaxis().set_visible(False)
+
     # plt.vlines(np.pi / 2, -1, 3, label = "π/2", linestyle = "dotted")
-    plt.hlines(2.85, 0, 4, label = f"Lambda vero", linestyle = "dotted", color  = "#050505")
+    plt.hlines(2.85, 0, 4, label = "$\lambda_{best}$", linestyle = "dotted", color  = "#050505")
 
     # plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
 

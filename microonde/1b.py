@@ -92,19 +92,19 @@ def main():
 
     lnsp = np.linspace(arrthetarad[0], arrthetarad[-1], 10_000)
 
-    plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
-    plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
+    # plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
+    # plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
 
-    plt.plot(lnsp, model_cos(lnsp, *m1.values), label = "Attaccato")
-    plt.plot(lnsp, model_cos(lnsp, *m2.values), label = "Staccato")
-
-
-    # plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m3.fval, df = m3.ndof):.4f}")
-    # plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m4.fval, df = m4.ndof):.4f}")
+    # plt.plot(lnsp, model_cos(lnsp, *m1.values), label = "Attaccato")
+    # plt.plot(lnsp, model_cos(lnsp, *m2.values), label = "Staccato")
 
 
-    # plt.plot(lnsp, model_ellisse(lnsp, *m3.values), label = "Attaccato")
-    # plt.plot(lnsp, model_ellisse(lnsp, *m4.values), label = "Staccato")
+    plt.plot([], [], ' ', label = f"P-value (attaccato): {1. - chi2.cdf(m3.fval, df = m3.ndof):.4f}")
+    plt.plot([], [], ' ', label = f"P-value (staccato): {1. - chi2.cdf(m4.fval, df = m4.ndof):.4f}")
+
+
+    plt.plot(lnsp, model_ellisse(lnsp, *m3.values), label = "Attaccato")
+    plt.plot(lnsp, model_ellisse(lnsp, *m4.values), label = "Staccato")
 
     plt.legend()
     plt.show()
