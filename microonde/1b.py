@@ -84,8 +84,6 @@ def main():
     print(m4.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m4.fval, df = m4.ndof)}")
 
-    fig, ax = plt.subplots()
-
     plt.axes(xlabel = "Theta [rad]", ylabel = "Segnale [V]")
 
     plt.errorbar(arrthetarad, arrs1, serrors, linestyle = "", marker = "o", c = "#05e545")

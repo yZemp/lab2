@@ -60,7 +60,7 @@ def main():
     plt.errorbar(arrthetarad, arrs, serrors, linestyle = "", marker = "o", c = "#050505")
 
     lnsp = np.linspace(arrthetarad[0], arrthetarad[-1], 10_000)
-    plt.plot(lnsp, model(lnsp, *m1.values), label = "Cos", c = "#e52575")
+    plt.plot(lnsp, model(lnsp, *m1.values), label = "$y = A \cos(\omega x + \phi) + B$", c = "#e52575")
 
     def fitted(x):
         return model(x, *m1.values)
@@ -72,8 +72,8 @@ def main():
     plt.vlines(max1, -.3, 1, label = f"Max 1 (°) = {max1 * 180 / np.pi:.1f}", linestyle = "dotted", color  = "#0099cc")
     plt.vlines(max2, -.3, 1, label = f"Max 2 (°) = {max2 * 180 / np.pi:.1f}", linestyle = "dotted", color  = "#33cc00")
 
-    print(fitted(max1))
-    print(fitted(max2))
+    # print(fitted(max1))
+    # print(fitted(max2))
 
     plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
 

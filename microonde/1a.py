@@ -56,7 +56,7 @@ def interp_1(x, y, yerr, func = model_1):
 def interp_2(x, y, yerr, func = model_2):
     my_cost = cost.LeastSquares(x, y, yerr, func)
     m = Minuit(my_cost, 1, 1, 2)
-    m.limits["phi"] = (0, 100)
+    # m.limits["phi"] = (0, 100)
     m.migrad()
     m.hesse()
     return m
@@ -64,7 +64,7 @@ def interp_2(x, y, yerr, func = model_2):
 def interp_3(x, y, yerr, func = model_3):
     my_cost = cost.LeastSquares(x, y, yerr, func)
     m = Minuit(my_cost, 1, 1, 1, 2)
-    m.limits["phi"] = (0, 100)
+    # m.limits["phi"] = (0, 100)
     m.migrad()
     m.hesse()
     return m
@@ -86,7 +86,7 @@ def main():
     
     print("----------------------------------------------- M2 -----------------------------------------------")
     m2 = interp_2(arralpha_rad, arrs, serrors)
-    # print(m2.migrad())
+    print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
 
@@ -101,9 +101,9 @@ def main():
     plt.vlines(np.pi / 2, -1, 3, label = "π/2", linestyle = "dotted")
 
     lnsp = np.linspace(arralpha_rad[0], arralpha_rad[-1], 10_000)
-    plt.plot(lnsp, model_1(lnsp, *m1.values), label = "cos")
-    plt.plot(lnsp, model_2(lnsp, *m2.values), label = "cos^2", c = "#a51525")
-    plt.plot(lnsp, model_3(lnsp, *m3.values), label = "cos^2 + cos", c = "#35d525")
+    plt.plot(lnsp, model_1(lnsp, *m1.values), label = "$A\cos(x + \phi) + B$")
+    plt.plot(lnsp, model_2(lnsp, *m2.values), label = "$A\cos^2(x + \phi)$ + B", c = "#a51525")
+    plt.plot(lnsp, model_3(lnsp, *m3.values), label = "$A\cos^2(x + \phi) + B\cos(x + \phi) + C$", c = "#35d525")
 
 
     plt.legend()
