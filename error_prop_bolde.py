@@ -104,12 +104,12 @@ def propagazione_errore (vector, formula , values , covmat , var_else = None, va
 #######################################################################################################
 # Istruzioni
 
-# vector = ['a' , 'b' , 'c']
-# formula = 'a+b*x+c*x^2'
-# values = [1,2,3]
-# covs = [[0,1,2],[1,2,3],[4,2,1]]
-# var = ['x' , 'y']
-# variues = [1.55 , 0.5]
+vector = ['d', 'theta']
+formula = 'd * sin(theta)'
+values = [1657, 0.2694]
+covs = [[9, 0], [0, np.power(0.0008, 2)]]
+var = []
+variues = []
 
 # per utilizzare la funzione, inserire:
 # - vector , contenente le variabili da derivare sottoforma di stringhe
@@ -119,4 +119,4 @@ def propagazione_errore (vector, formula , values , covmat , var_else = None, va
 # - var, le variabili inserite nella funzione non da derivare
 # - variues, valori delle variabili non da derivare
 # - display (facoltativa), variabile Booleana per avere il display della formula o no
-# (propagazione_errore(vector , formula , values , covs , var , variues))
+(propagazione_errore(vector , formula , values , covs , var , variues))
