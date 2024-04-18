@@ -20,11 +20,11 @@ lambdas = data["Lambda"].to_numpy()
 lambda_errors = data["Sigma lambda"].to_numpy()
 veri = [404.6563,407.7837,433.9223,485.5584,491.6068,546.0735,576.9598,579.0663, 629.1228, 671.634]
 
-def chi2(x, xv, errs):
-    if len(x) != len(xv) or len(xv) != len(errs): return -1
+def chi2(x, xtrue, errs):
+    if len(x) != len(xtrue) or len(xtrue) != len(errs): return -1
     sum = 0
     for i in range(len(x)):
-        sum += abs(x[i] - xv[i]) / errs[i]
+        sum += abs(x[i] - xtrue[i]) / errs[i]
     
     return sum
 
