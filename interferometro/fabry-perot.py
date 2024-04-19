@@ -37,6 +37,7 @@ errs1 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)f
 x1 = data["N1"][::-1]
 x1 = x1[~np.isnan(x1)]
 y1 = [np.cos(np.arctan(r / D)) for r in raggi1]
+y1 = [1 - y for y in y1]
 
 
 raggi2 = (data["Diametro2 [cm]"].to_numpy() * 1e-2) / 2
@@ -46,6 +47,7 @@ errs2 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)f
 x2 = data["N2"][::-1]
 x2 = x2[~np.isnan(x2)]
 y2 = [np.cos(np.arctan(r / D)) for r in raggi2]
+y2 = [1 - y for y in y2]
 
 
 raggi3 = (data["Diametro3 [cm]"].to_numpy() * 1e-2) / 2
@@ -55,6 +57,7 @@ errs3 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)f
 x3 = data["N3"][::-1]
 x3 = x3[~np.isnan(x3)]
 y3 = [np.cos(np.arctan(r / D)) for r in raggi3]
+y3 = [1 - y for y in y3]
 
 
 
@@ -62,14 +65,14 @@ y3 = [np.cos(np.arctan(r / D)) for r in raggi3]
 # Functions
 
 def model_linear(x, d, B):
-    return  (lam / (2 * d)) * x + B
+    return (lam / (2 * d)) * x + B
 
 #####################################################################
 # Interpolation
     
 def interp_linear(x, y, yerr, func = model_linear):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, .01, 1)
+    m = Minuit(my_cost, - .01, 0)
     m.migrad()
     m.hesse()
     return m
@@ -98,7 +101,7 @@ def myplot(x, y, err, c, label, m):
 def main():
     # print(f"Raggi: {raggi1}\nX1: {x1}\n Y1 = cos(theta): {y1}")
 
-    print("----------------------------------------------- M1 -----------------------------------------------")
+    # print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp_linear(x1, y1, errs1)
     # print(m1.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
@@ -106,7 +109,7 @@ def main():
     # print(m1.values["d"])
 
 
-    print("----------------------------------------------- M2 -----------------------------------------------")
+    # print("----------------------------------------------- M2 -----------------------------------------------")
     m2 = interp_linear(x2, y2, errs2)
     # print(m2.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
@@ -114,7 +117,7 @@ def main():
     # print(m2.values["d"])
 
 
-    print("----------------------------------------------- M3 -----------------------------------------------")
+    # print("----------------------------------------------- M3 -----------------------------------------------")
     m3 = interp_linear(x3, y3, errs3)
     # print(m3.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
