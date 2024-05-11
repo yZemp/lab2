@@ -54,7 +54,10 @@ def main():
 
     plt.errorbar(angoli, frange, sigmaf, xerr = sigmaa, label = "Data (1)", linestyle = "", marker = "o", c = "#151515")
 
-    plt.legend()
+    plt.xlabel("$\Delta \\theta$")
+    plt.ylabel("$\Delta N$")
+
+    plt.legend(loc = 2)
     plt.show()
 
 
@@ -79,8 +82,9 @@ def main():
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
-    lnsp = np.linspace(angoli[0] - 0.02, angoli[-1] + 0.02, 10_000)
-    plt.plot(lnsp, model(lnsp, *m2.values), label = "Legge di stokeazzo THE RETURN", c = "#a515d5")
+    lnsp = np.linspace(angoli[0] - 0.01, angoli[-1] + 0.01, 10_000)
+    # plt.plot(lnsp, model(lnsp, *m2.values), label = "Legge di stokeazzo THE RETURN", c = "#a515d5")
+    plt.plot(lnsp, model(lnsp, *m2.values), label = "Legge", c = "#a515d5")
 
     plt.xlabel("$\Delta \\theta$")
     plt.ylabel("$\Delta N$")

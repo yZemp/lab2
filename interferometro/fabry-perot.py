@@ -34,30 +34,33 @@ raggi1 = (data["Diametro1 [cm]"].to_numpy() * 1e-2) / 2
 raggi1 = raggi1[~np.isnan(raggi1)]
 # raggi1 = (np.asarray([2.8,4.3,5.4,6.3,7.1,7.8,8.5,9.1,9.6]) * 1e-2) / 2
 errs1 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)for r in raggi1]
-x1 = data["N1"][::-1]
+# x1 = data["N1"][::-1]
+x1 = data["N1"]
 x1 = x1[~np.isnan(x1)]
 y1 = [np.cos(np.arctan(r / D)) for r in raggi1]
-y1 = [1 - y for y in y1]
+y1 = [y - 1 for y in y1]
 
 
 raggi2 = (data["Diametro2 [cm]"].to_numpy() * 1e-2) / 2
 raggi2 = raggi2[~np.isnan(raggi2)]
 # raggi2 = (np.asarray([2.1,4.0,5.1,6.1,6.9,7.7]) * 1e-2) / 2
 errs2 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)for r in raggi2]
-x2 = data["N2"][::-1]
+# x2 = data["N2"][::-1]
+x2 = data["N2"]
 x2 = x2[~np.isnan(x2)]
 y2 = [np.cos(np.arctan(r / D)) for r in raggi2]
-y2 = [1 - y for y in y2]
+y2 = [y - 1 for y in y2]
 
 
 raggi3 = (data["Diametro3 [cm]"].to_numpy() * 1e-2) / 2
 raggi3 = raggi3[~np.isnan(raggi3)]
 # raggi3 = (np.asarray([1.6,3.7,4.9,5.9,6.9,7.6,8.2,8.9]) * 1e-2) / 2
 errs3 = [abs((r * D) / np.power(np.power(r, 2) + np.power(D, 2), 1.5) * sigmar)for r in raggi3]
-x3 = data["N3"][::-1]
+# x3 = data["N3"][::-1]
+x3 = data["N3"]
 x3 = x3[~np.isnan(x3)]
 y3 = [np.cos(np.arctan(r / D)) for r in raggi3]
-y3 = [1 - y for y in y3]
+y3 = [y - 1 for y in y3]
 
 
 
@@ -106,7 +109,7 @@ def main():
     # print(m1.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
 
-    # print(m1.values["d"])
+    print(m1.values["d"], m1.errors["d"])
 
 
     # print("----------------------------------------------- M2 -----------------------------------------------")
@@ -114,7 +117,7 @@ def main():
     # print(m2.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
 
-    # print(m2.values["d"])
+    print(m2.values["d"], m2.errors["d"])
 
 
     # print("----------------------------------------------- M3 -----------------------------------------------")
@@ -122,14 +125,14 @@ def main():
     # print(m3.migrad())
     # print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
 
-    # print(m3.values["d"])
+    print(m3.values["d"], m3.errors["d"])
 
 
     # figure, axis = plt.subplots(2, 2)
 
-    myplot(x1, y1, errs1, "red", "Presa dati 1", m1)
-    myplot(x2, y2, errs2, "green", "Presa dati 2", m2)
-    myplot(x3, y3, errs3, "blue", "Presa dati 3", m3)
+    myplot(x1, y1, errs1, "red", "Prima misura", m1)
+    myplot(x2, y2, errs2, "green", "Seconda misura", m2)
+    myplot(x3, y3, errs3, "blue", "Terza misura", m3)
 
 if __name__ == "__main__":
     main()
