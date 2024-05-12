@@ -42,6 +42,8 @@ Theta_true = [np.arccos(np.cos(Theta_inc) - (N * lambd) / d) for N in Ns]
 # Runtime
 
 def main():
+    plt.figure(figsize = (2, 1))
+
     plt.axes(xlabel = "N", ylabel = "$\\theta(N)$")
 
     plt.scatter(Ns, Theta_true, s = 100, alpha = 1, marker = "x", c = "#020202", label = "$\\theta$ teorici")
