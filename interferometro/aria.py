@@ -17,7 +17,7 @@ sys.path.append("/home/yzemp/Documents/Programming/lab2")
 d = 0.03
 lam = 0.0000006328
 # lam = 0.000000634
-P0 = 101325 # Pascal
+P0 = 101.325 # kiloPascal
 
 sheet_id = "1dRjk3ARX3-TDBIuWrPaqR57W10_ucC5kEYAa6Lzmtn0"
 sheet_name = "vetro"
@@ -33,7 +33,6 @@ deltaps = [68, 50, 80, 30]
 
 def model(deltap, m):
     return ((2 * d * m) / (lam)) * deltap
-
 
 ##########################################################
 # interpolations
@@ -69,7 +68,7 @@ def main():
 
     plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
     plt.plot([], [], ' ', label = f"m = ({m} $\pm$ {sm})$\\times10^{-6}$ [$Pa^{-1}$]")
-    plt.plot([], [], ' ', label = f"n = {m * P0 * 10 ** (- 6) + 1:.3f} $\\pm$ {sm * P0 * 10 ** (-6):.3f}")
+    plt.plot([], [], ' ', label = f"n = {m * P0 * 10 ** (- 6) + 1:.6f} $\\pm$ {sm * P0 * 10 ** (-6):.6f}")
 
 
 
