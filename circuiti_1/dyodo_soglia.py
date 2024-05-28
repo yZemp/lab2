@@ -53,17 +53,17 @@ corrente = corrente[~np.isnan(corrente)]
 sigma_corrente = np.concatenate((sigma_corrente0 / 1000, sigma_corrente1, sigma_corrente2))
 # sigma_corrente = np.concatenate((sigma_corrente1, sigma_corrente2))
 sigma_corrente = sigma_corrente[~np.isnan(sigma_corrente)]
-# sigma_corrente = sigma_corrente[~np.isnan(sigma_corrente)] / np.sqrt(12)
+sigma_corrente = sigma_corrente[~np.isnan(sigma_corrente)] / np.sqrt(12)
 potenziale = np.concatenate((potenziale0, potenziale1, potenziale2))
 # potenziale = np.concatenate((potenziale1, potenziale2))
 potenziale = potenziale[~np.isnan(potenziale)]
 sigma_potenziale = np.concatenate((sigma_potenziale0, sigma_potenziale1, sigma_potenziale2))
 # sigma_potenziale = np.concatenate((sigma_potenziale1, sigma_potenziale2))
 sigma_potenziale = sigma_potenziale[~np.isnan(sigma_potenziale)]
-# sigma_potenziale = sigma_potenziale[~np.isnan(sigma_potenziale)] / np.sqrt(12)
+sigma_potenziale = sigma_potenziale[~np.isnan(sigma_potenziale)] / np.sqrt(12)
 
 
-cut_finale = 27
+cut_finale = 33
 rcorrente = corrente[cut_finale:]
 rsigma_corrente = sigma_corrente[cut_finale:]
 rpotenziale = potenziale[cut_finale:]
@@ -148,16 +148,23 @@ def main():
     # plt.xlim = (0, rpotenziale[-1] + 0.1)
     # plt.ylim = (0, rcorrente[-1] + 0.1)
 
-    lnsp = np.linspace(rpotenziale[0] - 0.001, rpotenziale[-1] + 0.03, 10_000)
+    lnsp = np.linspace(rpotenziale[0] - 0.02, rpotenziale[-1] + 0.02, 10_000)
     plt.plot(lnsp, model(lnsp, *m2.values), label = "Legge di Shockley", c = "#a515d5")
 
+    A = m2.values[0] / 100
+    sA = m2.errors[0] / 100
+    B = m2.values[1] / 100
+    sB = m2.errors[1] / 100
+
     plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m2.fval / m2.ndof):.3f}, P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
-    plt.plot([], [], ' ', label = f"A = ({m2.values[0]:.0f} $\pm$ {m2.errors[0]:.0f})")
-    plt.plot([], [], ' ', label = f"B = ({m2.values[1]:.0f} $\pm$ {m2.errors[1]:.0f})")
+    plt.plot([], [], ' ', label = f"A = ({A:.0f} $\pm$ {sA:.0f})x10^{2}")
+    plt.plot([], [], ' ', label = f"B = ({B:.0f} $\pm$ {sB:.0f})x10^{2}")
+
+
+    plt.xlabel("Potenziale $[V]$")
+    plt.ylabel("Corrente $[A]$")
 
     plt.legend(loc = "upper left")
-
-
     plt.show()
 
 

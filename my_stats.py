@@ -1,6 +1,11 @@
 import numpy as np
+import matplotlib.pyplot as plt
 #from random import random
 import scipy as sp
+import scipy.stats
+
+from scipy.stats import t as tfunc
+
 import sys
 
 def stat(sample):
@@ -24,7 +29,16 @@ def sturges(N):
         finally:
                 return int(np.ceil(1 + 3.322 * np.log(N)))
 
+def t_test(t, ndof):
+        '''
+        Pass t-value and ndof to find p-value  
+        '''
+        return 1 - tfunc.cdf(t, ndof) + tfunc.cdf(-t, ndof)
+
+
 
 if __name__ == "__main__":
-        print(sturges([i for i in range(1, 1484)]))
-        print(sturges(1484))
+        l = np.linspace(-10, 10, 10_000)
+        plt.plot(l, t.cdf(l, 1))
+        plt.show()
+
