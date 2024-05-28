@@ -62,6 +62,13 @@ sigma_potenziale = np.concatenate((sigma_potenziale0, sigma_potenziale1, sigma_p
 sigma_potenziale = sigma_potenziale[~np.isnan(sigma_potenziale)]
 # sigma_potenziale = sigma_potenziale[~np.isnan(sigma_potenziale)] / np.sqrt(12)
 
+
+cut_finale = 27
+rcorrente = corrente[cut_finale:]
+rsigma_corrente = sigma_corrente[cut_finale:]
+rpotenziale = potenziale[cut_finale:]
+rsigma_potenziale = sigma_potenziale[cut_finale:]
+
 print(corrente, "\n", sigma_corrente, "\n", potenziale, "\n", sigma_potenziale, "\n")
 
 
@@ -73,8 +80,8 @@ print(corrente, "\n", sigma_corrente, "\n", potenziale, "\n", sigma_potenziale, 
 ##########################################################3
 # models
 
-def model(V, kdiodo, I_0, g):
-    return I_0 * (np.exp((kdiodo * V) / g) - 1)
+def model(V, A, B):
+    return A * V + B
 
 # def model_joke(V, I_0, g, A, omega, phi):
 #     return I_0 * (np.exp((kdiodo * V) / g) - 1) + A * np.sin(omega * g + phi)
@@ -85,13 +92,10 @@ def model(V, kdiodo, I_0, g):
 
 def interp(x, y, yerr, func = model):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 38.6, .001, 10)
-    m.limits["kdiodo"] = (35, 45)
+    m = Minuit(my_cost, 100, -100)
     m.migrad()
     m.hesse()
     return m
-
-
 
 
 #####################################################################
@@ -101,15 +105,15 @@ def main():
     msize = 3
 
     print("----------------------------------------------- M1 -----------------------------------------------")
-    m1 = interp(potenziale, corrente, sigma_corrente)
+    m1 = interp(rpotenziale, rcorrente, rsigma_corrente)
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
 
-    # plt.errorbar(potenziale, corrente, yerr = sigma_corrente, xerr = sigma_potenziale, linestyle = "None", c = "#090909")
+    # plt.errorbar(rpotenziale, corrente, yerr = sigma_corrente, xerr = sigma_potenziale, linestyle = "None", c = "#090909")
 
     # plt.yscale("log")
     
-    # lnsp = np.linspace(potenziale[0] - 0.01, potenziale[-1] + 0.01, 10_000)
+    # lnsp = np.linspace(rpotenziale[0] - 0.01, rpotenziale[-1] + 0.01, 10_000)
     # plt.plot(lnsp, model(lnsp, *m1.values), label = "Legge", c = "#a515d5")
 
     # plt.plot(lnsp, model(lnsp, 1, 5), label = "Tua madre", c = "#a515d5")
@@ -126,48 +130,33 @@ def main():
 
 
 
-    for i in range(len(potenziale)):
-        yl = model(potenziale[i] - sigma_potenziale[i], *m1.values)
-        yr = model(potenziale[i] + sigma_potenziale[i], *m1.values)
+    for i in range(len(rpotenziale)):
+        yl = model(rpotenziale[i] - rsigma_potenziale[i], *m1.values)
+        yr = model(rpotenziale[i] + rsigma_potenziale[i], *m1.values)
         diff = abs(yr - yl)
-        sigma_corrente[i] = np.sqrt(np.power(sigma_corrente[i], 2) + np.power(diff, 2))
+        rsigma_corrente[i] = np.sqrt(np.power(rsigma_corrente[i], 2) + np.power(diff, 2))
 
     
     print("----------------------------------------------- M2 -----------------------------------------------")
-    m2 = interp(potenziale, corrente, sigma_corrente)
+    m2 = interp(rpotenziale, rcorrente, rsigma_corrente)
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
 
-    fig, axes = plt.subplots(1, 2)
+    plt.errorbar(potenziale, corrente, yerr = 0, linestyle = "None", c = "#090909", marker = "o", markersize = msize, alpha = 1, label = "Data (no errorbars shown for clarity)")
 
-    axes[0].errorbar(potenziale, corrente, yerr = sigma_corrente, linestyle = "None", c = "#090909", marker = "o", markersize = msize)
+    # plt.yscale("log")
+    # plt.xlim = (0, rpotenziale[-1] + 0.1)
+    # plt.ylim = (0, rcorrente[-1] + 0.1)
 
-    lnsp = np.linspace(potenziale[0] - 0.01, potenziale[-1] + 0.01, 10_000)
-    axes[0].plot(lnsp, model(lnsp, *m2.values), label = "Legge di Shockley", c = "#a515d5")
+    lnsp = np.linspace(rpotenziale[0] - 0.001, rpotenziale[-1] + 0.03, 10_000)
+    plt.plot(lnsp, model(lnsp, *m2.values), label = "Legge di Shockley", c = "#a515d5")
 
-    axes[0].plot([], [], ' ', label = f"$\\chi^2_v$: {(m2.fval / m2.ndof):.3f}, P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
-    axes[0].plot([], [], ' ', label = f"Kdiodo = ({m2.values[0]:.0f} $\pm$ {m2.errors[0]:.0f})")
-    axes[0].plot([], [], ' ', label = f"g = ({m2.values[2]:.2f} $\pm$ {m2.errors[2]:.2f})")
+    plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m2.fval / m2.ndof):.3f}, P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
+    plt.plot([], [], ' ', label = f"A = ({m2.values[0]:.0f} $\pm$ {m2.errors[0]:.0f})")
+    plt.plot([], [], ' ', label = f"B = ({m2.values[1]:.0f} $\pm$ {m2.errors[1]:.0f})")
 
-    axes[0].legend(loc = "upper left")
+    plt.legend(loc = "upper left")
 
-    axes[1].set_yscale("log")
-
-    axes[1].errorbar(potenziale, corrente, yerr = sigma_corrente, linestyle = "None", c = "#090909", marker = "o", markersize = msize)
-
-    lnsp = np.linspace(potenziale[0] - 0.01, potenziale[-1] + 0.01, 10_000)
-    axes[1].plot(lnsp, model(lnsp, *m2.values), label = "Legge di Shockley", c = "#a515d5")
-
-    # plt.plot(lnsp, model(lnsp, 1, 5), label = "Tua madre", c = "#a515d5")
-
-    for ax in axes:
-        ax.set(xlabel = "Potenziale $[V]$", ylabel = "Corrente $[mA]$")
-
-    axes[1].plot([], [], ' ', label = f"$\\chi^2_v$: {(m2.fval / m2.ndof):.3f}, P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
-    axes[1].plot([], [], ' ', label = f"Kdiodo = ({m2.values[0]:.0f} $\pm$ {m2.errors[0]:.0f})")
-    axes[1].plot([], [], ' ', label = f"g = ({m2.values[2]:.2f} $\pm$ {m2.errors[2]:.2f})")
-
-    axes[1].legend()
 
     plt.show()
 
