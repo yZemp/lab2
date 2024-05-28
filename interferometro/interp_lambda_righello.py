@@ -28,8 +28,6 @@ Theta_inc = 0.08226075666
 lambd = 0.0000006328
 d = .001
 
-Ns1 = [1, 2, 3]
-Ns2 = [-5, -4, -3, -2, -1]
 Ns = [-5, -4, -3, -2, -1, 1, 2, 3]
 ThetaN1 = data["ThetaN1"].to_numpy()
 ThetaN1 = ThetaN1[~np.isnan(ThetaN1)]
@@ -38,6 +36,9 @@ ThetaN2 = ThetaN2[~np.isnan(ThetaN2)]
 ThetaN2 = ThetaN2[::-1]
 
 ThetaN = np.concatenate((ThetaN2, ThetaN1))
+
+Ns = Ns[1:]
+ThetaN = ThetaN[1:]
 print(ThetaN1, ThetaN2, ThetaN)
 
 errors = .0011
@@ -58,14 +59,14 @@ def model_2(ThetaN, param):
     
 def interp_1(x, y, yerr, func = model_1):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, .6)
+    m = Minuit(my_cost, .633)
     m.migrad()
     m.hesse()
     return m
     
 def interp_2(x, y, yerr, func = model_2):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, .6)
+    m = Minuit(my_cost, .633)
     m.migrad()
     m.hesse()
     return m
@@ -96,7 +97,6 @@ def main():
     plt.errorbar(Ns, ThetaN, errors, linestyle = "", label = "Data", marker = "o", c = "#090909")
     plt.plot(lnsp, model_1(lnsp, *m1.values), label = "$\\theta_N(N)$", c = "#9929a9")
     
-
     plt.plot([], [], ' ', label = f"P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
     plt.plot([], [], ' ', label = f"$\\lambda$ = ({m1.values[0]:.3f} $\pm$ {m1.errors[0]:.3f})$\\times10^{-6}$ m")
 

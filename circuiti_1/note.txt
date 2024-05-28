@@ -1,0 +1,3 @@
+fare il fit con sigma = sensibilita strumento, vedere quanto viene
+se risulta ancora troppo buono rifare con sigma = 1 / sqrt(12), vedere quanto viene
+in relazione discutere sovra stima errori strumentali 
