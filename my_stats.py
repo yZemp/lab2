@@ -39,6 +39,6 @@ def t_test(t, ndof):
 
 if __name__ == "__main__":
         l = np.linspace(-10, 10, 10_000)
-        plt.plot(l, tfunc.cdf(l, 1))
+        plt.plot(l, tfunc.cdf(l, 10))
         plt.show()
 
