@@ -11,7 +11,7 @@ import pandas as pd
 # vars
 
 sheet_id = "1DR5TWcdKj22btlrAdPJKfSGy_9bbEQaM7yqhpW0MGiA"
-sheet_name = "rl_media"
+sheet_name = "rc_2_math"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 data = pd.read_csv(url)
 print(data)
@@ -20,19 +20,19 @@ def clear_arr(arr):
     return arr[~np.isnan(arr)]
 
 
-cut_start = 300
-cut_end = 1900
+cut_start = 200
+cut_end = -10
 x = clear_arr(data["x"].to_numpy())[cut_start:cut_end]
 y = clear_arr(data["y"].to_numpy())[cut_start:cut_end]
-yerr = (np.ones_like(y) * .2) / np.sqrt(128)
+yerr = (np.ones_like(y) * .08) / np.sqrt(12)
 
 
 
 ###########################################################
 # models
 
-def model(t, V0, tau):
-    return V0 * (1 - np.exp(- t / tau))
+def model(t, V0, tau, A):
+    return A - V0 * (np.exp(- t / tau))
 
 
 ###########################################################
@@ -40,7 +40,7 @@ def model(t, V0, tau):
 
 def interp(x, y, yerr, func = model):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 1, 1)
+    m = Minuit(my_cost, 5, 0.0001, 1)
     m.migrad()
     m.hesse()
     return m
@@ -53,7 +53,7 @@ def interp(x, y, yerr, func = model):
 
 def main():
 
-    plt.errorbar(x, y, yerr, label = "Data", linestyle = "", marker = "o", markersize = 1, c = "#55d9a5", alpha = .4)
+    plt.errorbar(x, y, yerr, label = "Data", linestyle = "", marker = "o", markersize = 3, c = "#55d9a5", alpha = .4)
 
     print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp(x, y, yerr)
@@ -62,6 +62,7 @@ def main():
     
     lnsp = np.linspace(x[0], x[-1], 10_000)
     plt.plot(lnsp, model(lnsp, *m1.values), label = "$V(t) = V_0 (1 - e^{-t/\\tau})$", c = "#a515d5")
+    # plt.plot(lnsp, model(lnsp, 5, .0001))
 
     plt.xlabel("Tempo [s]")
     plt.ylabel("Tensione [V]")
