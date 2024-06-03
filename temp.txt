@@ -1,0 +1,13 @@
+def model(bin_edges, N, mu, sigma):
+    return N * norm.cdf(bin_edges, mu, sigma)
+
+clt_data = [my_stats.avg(generate_TAC(f, 0, alpha, 1, 1000)) for i in range(500)]
+b_content, b_edges, gaussian_hist = plt.hist(clt_data, bins = my_stats.sturges(clt_data))
+plt.show()
+
+c = ExtendedBinnedNLL(b_content, b_edges, model)
+m = Minuit(c, N = len(clt_data), mu = my_stats.avg(clt_data), sigma = my_stats.stdDeviation(clt_data))
+m.migrad()
+
+print(m.valid)
+display(m)
