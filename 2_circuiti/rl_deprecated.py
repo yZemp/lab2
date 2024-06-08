@@ -11,20 +11,20 @@ import pandas as pd
 # vars
 
 sheet_id = "1DR5TWcdKj22btlrAdPJKfSGy_9bbEQaM7yqhpW0MGiA"
-sheet_name = "rl_media"
+sheet_name = "rl"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 data = pd.read_csv(url)
 print(data)
 
 def clear_arr(arr):
-    return arr[~np.isnan(arr)]
+    return arr  [~np.isnan(arr)]
 
 
-cut_start = 300
-cut_end = 1900
+cut_start = 500
+cut_end = -400
 x = clear_arr(data["x"].to_numpy())[cut_start:cut_end]
 y = clear_arr(data["y"].to_numpy())[cut_start:cut_end]
-yerr = (np.ones_like(y) * .08) / np.sqrt(128)
+yerr = (np.ones_like(y) * .08) / np.sqrt(12)
 
 
 
@@ -53,7 +53,7 @@ def interp(x, y, yerr, func = model):
 
 def main():
 
-    plt.errorbar(x, y, yerr, label = "Data", linestyle = "", marker = "o", markersize = 1, c = "#55d9a5", alpha = .8)
+    plt.errorbar(x, y, yerr, label = "Data", linestyle = "", marker = "o", markersize = 3, c = "#55d9a5", alpha = .4)
 
     print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp(x, y, yerr)

@@ -15,7 +15,7 @@ from my_stats import stat, sturges
 # vars
 
 sheet_id = "1DR5TWcdKj22btlrAdPJKfSGy_9bbEQaM7yqhpW0MGiA"
-sheet_name = "rl"
+sheet_name = "rc_media"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 data = pd.read_csv(url)
 # print(data)
@@ -28,7 +28,7 @@ def clear_arr(arr):
 # models
 
 def model(t, V0, tau):
-    return V0 * (1 - np.exp(- t / tau))
+    return V0 * (np.exp(- t / tau))
 
 def linear(x, A, B):
     return A * x + B
@@ -153,11 +153,13 @@ def main():
 ystep = .08
 
 cut_start = 500
-cut_end = 2100
-x = clear_arr(data["x"].to_numpy())[cut_start:cut_end]
-y = clear_arr(data["y"].to_numpy())[cut_start:cut_end]
+cut_end = 500
+x = clear_arr(data["x"].to_numpy())[cut_start:-cut_end]
+y = clear_arr(data["y"].to_numpy())[cut_start:-cut_end]
 # yerr = (np.ones_like(y) * ystep) / np.sqrt(12) # This is redefined later
 
+# Testing only:
+plt.errorbar(x, y, yerr = 0, label = "Data", linestyle = "", marker = "o", markersize = 3, c = "#a515d5", alpha = .9)
 
 # Zipping data to be reduced
 data = sorted(zip(x, y), key = lambda tup: tup[1])
@@ -169,9 +171,6 @@ for i, j in data:
 # Histogram data (number of occurences in a strip, per strip)
 ydata = [key for key, item in data_dict.items()]
 weights = [len(item) for key, item in data_dict.items()]
-
-# print("Momenta of occurences per strip:\t", stat(weights)["mu"], stat(weights)["stdDev"])
-print(len(ydata))
 
 plt.figure(0)
 plt.hist(ydata, bins = len(ydata), weights = weights, rwidth = .9, orientation = "horizontal")
@@ -225,12 +224,12 @@ plt.xlim(-.00002, .00002)
 plt.legend()
 plt.show()
 
-# Trimming data (the exponential is going up)
-trim = 3
-xdata = xdata[:-trim]
-ydata = ydata[:-trim]
-yerr = yerr[:-trim]
-xerr = xerr[:-trim]
+# Trimming data (the exponential is going down)
+# trim = 3
+# xdata = xdata[:-trim]
+# ydata = ydata[:-trim]
+# yerr = yerr[:-trim]
+# xerr = xerr[:-trim]
 
 # Actual interpolation of data
 if __name__ == "__main__":
