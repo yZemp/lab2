@@ -46,17 +46,45 @@ def model(t, V0, R, L, C):
     return V0 * np.exp(- gamma * t) * (np.exp(beta * t) - np.exp(- beta * t))
 
 
+def model_sottosmorzato(t, V0, gamma, omega, phi):
+    omega_0 = np.sqrt(np.power(omega, 2) - np.power(gamma, 2))
+    return V0 * np.exp(- gamma * t) * np.sin(omega_0 * t + phi)
+
+
+
+def model_critico(t, V0, L, C):
+    R = 2 * np.sqrt(L / C)
+    omega2 = 1 / (L * C)
+    gamma = R / (2 * L)
+    beta = np.sqrt(omega2 - np.power(gamma, 2))
+
+    return V0 * np.exp(- gamma * t) * (np.exp(beta * t) - np.exp(- beta * t))
+
+
 ###########################################################
 # interpolations
 
 def interp(x, y, yerr, func = model):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 10, 10, .001, .001)
+    m = Minuit(my_cost, 500, 2000, .001, .00001)
     m.migrad()
     m.hesse()
     return m
 
 
+def interp_sottosmorzato(x, y, yerr, func = model_sottosmorzato):
+    my_cost = cost.LeastSquares(x, y, yerr, func)
+    m = Minuit(my_cost, 600, 1300, 15000, 3)
+    m.migrad()
+    m.hesse()
+    return m
+
+def interp_critico(x, y, yerr, func = model_critico):
+    my_cost = cost.LeastSquares(x, y, yerr, func)
+    m = Minuit(my_cost, 100, .0001, .0000001)
+    m.migrad()
+    m.hesse()
+    return m
 
 
 #####################################################################
@@ -66,13 +94,13 @@ def main():
 
 
     print("----------------------------------------------- M1 -----------------------------------------------")
-    m1 = interp(x, y, yerr)
+    m1 = interp_sottosmorzato(x, y, yerr)
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
     plt.errorbar(x, y, yerr, label = "Data", linestyle = "", marker = "o", markersize = 5, c = "#55d9a5", alpha = .4)
     lnsp = np.linspace(0, 0.0006, 100_000)
-    plt.plot(lnsp, model(lnsp, *m1.values), label = "$V(t) = V(t, V_0, R, L, C)$", c = "#a515d5")
+    plt.plot(lnsp, model_sottosmorzato(lnsp, *m1.values), label = "$V(t) = V(t, V_0, R, L, C)$", c = "#a515d5")
 
     # plt.plot(lnsp, 600 * np.exp(- 1300 * lnsp) * np.sin(np.sqrt(np.power(1300, 2) - np.power(15000, 2)) * lnsp + 1), label = "test")
     # plt.plot(lnsp, model_ext(lnsp, 600, 1300, 15_000, 3), label = "test")
@@ -89,19 +117,19 @@ def main():
     
     
     print("-------------------------------------------- ERRORS --------------------------------------------")
-    sqm = np.sqrt(np.sum(np.power((y - model(x , *m1.values)), 2)) / len(x))
+    sqm = np.sqrt(np.sum(np.power((y - model_sottosmorzato(x , *m1.values)), 2)) / len(x))
     yerr_2 = np.ones_like(x) * sqm
     # print(sqm)
 
 
     print("----------------------------------------------- M2 -----------------------------------------------")
-    m2 = interp(x, y, yerr_2)
+    m2 = interp_sottosmorzato(x, y, yerr_2)
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
     plt.errorbar(x, y, yerr_2, label = "Data", linestyle = "", marker = "o", markersize = 5, c = "#55d9a5", alpha = .4)
     lnsp = np.linspace(0, .0006, 100_000)
-    plt.plot(lnsp, model(lnsp, *m2.values), label = "$V(t) = V(t, V_0, R, L, C)$", c = "#a515d5")
+    plt.plot(lnsp, model_sottosmorzato(lnsp, *m2.values), label = "$V(t) = V(t, V_0, R, L, C)$", c = "#a515d5")
 
     # plt.plot(lnsp, 600 * np.exp(- 1300 * lnsp) * np.sin(np.sqrt(np.power(1300, 2) - np.power(15000, 2)) * lnsp + 1), label = "test")
     # plt.plot(lnsp, model_ext(lnsp, 600, 1300, 15_000, 3), label = "test")
