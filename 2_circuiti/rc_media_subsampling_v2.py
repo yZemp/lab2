@@ -14,7 +14,7 @@ from my_stats import sturges
 # vars
 
 sheet_id = "1DR5TWcdKj22btlrAdPJKfSGy_9bbEQaM7yqhpW0MGiA"
-sheet_name = "rl_media"
+sheet_name = "rc_media"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 data = pd.read_csv(url)
 print(data)
@@ -27,13 +27,14 @@ def clear_arr(arr):
 # models
 
 def model(t, V0, tau):
-    return V0 * (1 - np.exp(- t / tau))
+    return V0 * (np.exp(- t / tau))
 
 
-R = 2_000
-def model_2(t, V0, L):
-    tau = L / R
-    return V0 * (1 - np.exp(- t / tau))
+R = 1_000
+def model_2(t, V0, C):
+    tau = R * C
+    return V0 * (np.exp(- t / tau))
+
 
 
 ###########################################################
@@ -48,10 +49,11 @@ def interp(x, y, yerr, func = model):
 
 def interp_2(x, y, yerr, func = model_2):
     my_cost = cost.LeastSquares(x, y, yerr, func)
-    m = Minuit(my_cost, 1, .04)
+    m = Minuit(my_cost, 1, .0000002)
     m.migrad()
     m.hesse()
     return m
+
 
 
 #####################################################################
@@ -59,10 +61,10 @@ def interp_2(x, y, yerr, func = model_2):
 
 def main():
 
-    cut_start = 300
-    cut_end = 1900
-    xfull = clear_arr(data["x"].to_numpy())[cut_start:cut_end]
-    yfull = clear_arr(data["y"].to_numpy())[cut_start:cut_end]
+    cut_start = 400
+    cut_end = 600
+    xfull = clear_arr(data["x"].to_numpy())[cut_start:-cut_end]
+    yfull = clear_arr(data["y"].to_numpy())[cut_start:-cut_end]
 
     N = int((max(yfull) - min(yfull)) / .08)
     print("N: ", N)
@@ -70,8 +72,8 @@ def main():
 
     chi2s = []
 
-    Ls = []
-    Lerrs = []
+    Cs = []
+    Cerrs = []
 
     random.seed(0.)
 
@@ -103,15 +105,15 @@ def main():
             print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
 
             plt.errorbar(x, y, yerr, label = "Data (Sub sample)", linestyle = "", marker = "o", markersize = 1, c = "#053101", alpha = .8)
-            lnsp = np.linspace(0, .000_18, 10_000)
+            lnsp = np.linspace(0, .000_16, 10_000)
             # plt.plot(lnsp, model(lnsp, *m1.values), label = "$V(t) = V_0 (1 - e^{-t/\\tau})$", c = "#a515d5")
-            plt.plot(lnsp, model_2(lnsp, *m1.values), label = "$V(t) = V_0 (1 - e^{- t R / L})$", c = "#a515d5")
+            plt.plot(lnsp, model_2(lnsp, *m1.values), label = "$V(t) = V_0 (e^{- t / R C})$", c = "#a515d5")
 
             plt.xlabel("Tempo [s]")
             plt.ylabel("Tensione [V]")
 
             plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m1.fval / m1.ndof):.3f}, P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
-            # plt.plot([], [], ' ', label = f"$\\L$ = ({param:.1f} $\pm$ {param_err:.1f}) s")
+            # plt.plot([], [], ' ', label = f"$\\C$ = ({param:.1f} $\pm$ {param_err:.1f}) s")
 
             plt.legend()
             plt.show()
@@ -119,8 +121,8 @@ def main():
         # chi2s.append(m1.fval / m1.ndof)
         chi2s.append(1. - chi2.cdf(m1.fval, df = m1.ndof))
         if m1.valid and 1. - chi2.cdf(m1.fval, df = m1.ndof) > .05:
-            Ls.append(m1.values["L"])
-            Lerrs.append(m1.errors["L"])
+            Cs.append(m1.values["C"])
+            Cerrs.append(m1.errors["C"])
 
         if not i % 100:
             print(i)
@@ -131,10 +133,10 @@ def main():
     plt.show()
 
     # Weighted average of extracted parameter
-    avg = sum([Ls[i] * (1 / np.power(Lerrs[i], 2)) for i in range(len(Ls))]) / sum([(1 / np.power(Lerrs[i], 2)) for i in range(len(Ls))])
-    err = np.sqrt(1 / sum([(1 / np.power(Lerrs[i], 2)) for i in range(len(Ls))]))
-    plt.errorbar(np.array(range(len(Ls))), Ls, Lerrs, marker = "x", color = "#010101", linestyle = "none", alpha = .3)
-    plt.hlines([avg, avg - err, avg + err], - 10, len(Ls) + 10, label = f"$L = ({avg:.5f} \pm {err:.5f})$", linestyles = "dotted", colors = "#a00101")
+    avg = sum([Cs[i] * (1 / np.power(Cerrs[i], 2)) for i in range(len(Cs))]) / sum([(1 / np.power(Cerrs[i], 2)) for i in range(len(Cs))])
+    err = np.sqrt(1 / sum([(1 / np.power(Cerrs[i], 2)) for i in range(len(Cs))]))
+    plt.errorbar(np.array(range(len(Cs))), Cs, Cerrs, marker = "x", color = "#010101", linestyle = "none", alpha = .3)
+    plt.hlines([avg, avg - err, avg + err], - 10, len(Cs) + 10, label = f"$C = ({avg:.11f} \pm {err:.11f})$", linestyles = "dotted", colors = "#a00101")
 
     plt.legend()
     plt.show()

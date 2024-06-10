@@ -62,7 +62,11 @@ cut_start = 500
 cut_end = 2100
 x = clear_arr(data["x"].to_numpy())[cut_start:cut_end]
 y = clear_arr(data["y"].to_numpy())[cut_start:cut_end]
-# yerr = (np.ones_like(y) * ystep) / np.sqrt(12) # This is redefined later
+yerr = (np.ones_like(y) * ystep) / np.sqrt(12) # This is redefined later
+
+plt.figure(0)
+plt.errorbar(x, y, yerr, linestyle = "none", color = "#55d9a5", alpha = .5, marker = "o", markersize = 3)
+plt.show()
 
 
 # Zipping data to be reduced
@@ -76,7 +80,7 @@ for i, j in data:
 ydata = [key for key, item in data_dict.items()]
 weights = [len(item) for key, item in data_dict.items()]
 
-plt.figure(0)
+plt.figure(1)
 plt.hist(ydata, bins = len(ydata), weights = weights, rwidth = .9, orientation = "horizontal")
 
 
@@ -90,7 +94,7 @@ ydata = ydata
 yerr = (np.ones_like(ydata) * ystep) / np.sqrt(12)
 xerr = [stat(item)["stdDev"] / np.sqrt(len(item)) for key, item in data_dict.items()]
 
-plt.figure(1)
+plt.figure(2)
 plt.errorbar(xdata, ydata, yerr = yerr, xerr = xerr, linestyle = "None")
 
 
@@ -106,13 +110,11 @@ for key, item in data_dict.items():
     chi2v.append(m.fval / m.ndof)
     centered_data = np.concatenate((centered_data, A))
 
-plt.figure(2)
+plt.figure(3)
 plt.hist(chi2v, bins = sturges(chi2v), rwidth = .9, density = True)
 
 
 # Plotting residuals
-
-
 
 
 plt.legend()

@@ -130,12 +130,12 @@ def main():
     print("-------------------------------------------- ERRORS --------------------------------------------")
 
     # Plotting yerrs
-    plt.errorbar(ydata, yerr, .01, marker = "x", linestyle = "None")
-    me = interp_linear(ydata, yerr, 0)
-    print(me.migrad())
+    plt.errorbar(ydata, yerr, 0, marker = "x", label = "Samples related to their errors", markersize = 10, linestyle = "None")
+    # me = interp_linear(ydata, yerr, 0)
+    # print(me.migrad())
 
-    lnsp = np.linspace(0, 8, 10_000)
-    plt.plot(lnsp, linear(lnsp, *me.values), label = "Parabola", c = "#070707")
+    # lnsp = np.linspace(0, 8, 10_000)
+    # plt.plot(lnsp, linear(lnsp, *me.values), label = "Parabola", c = "#070707")
     # plt.plot(lnsp, quadratic(lnsp, .001, -10, 1), label = "test", c = "#070707")
 
     plt.xlabel("Tensione [V]")
@@ -173,12 +173,13 @@ weights = [len(item) for key, item in data_dict.items()]
 # print("Momenta of occurences per strip:\t", stat(weights)["mu"], stat(weights)["stdDev"])
 print(len(ydata))
 
-plt.figure(0)
+plt.subplot(1, 2, 1)
+
 plt.hist(ydata, bins = len(ydata), weights = weights, rwidth = .9, orientation = "horizontal")
 
 
 # Finding average and error on the average per every strip
-plt.figure(1)
+# plt.figure(1)
 
 _data_statistics = [[key, stat(item)["mu"], stat(item)["stdDev"]] for key, item in data_dict.items()] # This is redefined better
 
@@ -188,8 +189,11 @@ ydata = ydata
 yerr = (np.ones_like(ydata) * ystep) / np.sqrt(12)
 xerr = [stat(item)["stdDev"] / np.sqrt(len(item)) for key, item in data_dict.items()]
 
+plt.subplot(1, 2, 2)
+
 plt.errorbar(xdata, ydata, yerr = yerr, xerr = xerr, linestyle = "None")
 
+# plt.subplot(1, 2, 2)
 plt.figure(2)
 
 # Creating a single array of centered data
@@ -226,11 +230,11 @@ plt.legend()
 plt.show()
 
 # Trimming data (the exponential is going up)
-trim = 3
-xdata = xdata[:-trim]
-ydata = ydata[:-trim]
-yerr = yerr[:-trim]
-xerr = xerr[:-trim]
+# trim = 3
+# xdata = xdata[:-trim]
+# ydata = ydata[:-trim]
+# yerr = yerr[:-trim]
+# xerr = xerr[:-trim]
 
 # Actual interpolation of data
 if __name__ == "__main__":
