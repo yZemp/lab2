@@ -40,13 +40,12 @@ def interp(x, y, yerr, func = model):
 
 def main():
 
-    plt.errorbar(x, y, yerr, label = "Label", linestyle = "", marker = "o", c = "#151515")
-
     print("----------------------------------------------- M1 -----------------------------------------------")
     m1 = interp(x, y, yerr)
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
+    plt.errorbar(x, y, yerr, label = "Label", linestyle = "", marker = "o", c = "#151515")
     lnsp = np.linspace(x[0] - 10, x[-1] + 10, 10_000)
     plt.plot(lnsp, model(lnsp, *m1.values), label = "Label model", c = "#a515d5")
 
