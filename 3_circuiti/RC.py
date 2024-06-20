@@ -19,33 +19,36 @@ data = pd.read_csv(url)
 def clear_arr(arr):
     return arr[~np.isnan(arr)]
 
+def remove_stuff(arr):
+    kill = [-2]
+    return np.delete(arr, *kill)
 
 # Omega (x axes)
-omegas = clear_arr(data["frequenza [Hz]"].to_numpy()) * 2 * np.pi
+omegas = remove_stuff(clear_arr(data["frequenza [Hz]"].to_numpy()) * 2 * np.pi)
 
 # First transfer function (res / gen) mod
 temp_res = clear_arr(data["2Ares [V]"].to_numpy()) / 2
 temp_gen = clear_arr(data["2Agen [V]"].to_numpy()) / 2
-absH1 = temp_res / temp_gen
+absH1 = remove_stuff(temp_res / temp_gen)
 temp_res_err = clear_arr(data["res err [V]"].to_numpy())
 temp_gen_err = clear_arr(data["gen err [V]"].to_numpy())
-absH1err = np.sqrt(np.power(temp_res_err / temp_gen, 2) + np.power((temp_res * temp_gen_err) / np.power(temp_gen, 2), 2))
+absH1err = remove_stuff(np.sqrt(np.power(temp_res_err / temp_gen, 2) + np.power((temp_res * temp_gen_err) / np.power(temp_gen, 2), 2)))
 
 # Second transfer function (cond / gen) mod
 temp_cond = clear_arr(data["2Acond [V]"].to_numpy()) / 2
 temp_gen = clear_arr(data["2Agen [V]"].to_numpy()) / 2
-absH2 = temp_cond / temp_gen
+absH2 = remove_stuff(temp_cond / temp_gen)
 temp_cond_err = clear_arr(data["cond err [V]"].to_numpy())
 temp_gen_err = clear_arr(data["gen err [V]"].to_numpy())
-absH2err = np.sqrt(np.power(temp_cond_err / temp_gen, 2) + np.power((temp_cond * temp_gen_err) / np.power(temp_gen, 2), 2))
+absH2err = remove_stuff(np.sqrt(np.power(temp_cond_err / temp_gen, 2) + np.power((temp_cond * temp_gen_err) / np.power(temp_gen, 2), 2)))
 
 # First transfer function (res / gen) phase
-phi = (clear_arr(data["delta_phi [°]"].to_numpy()) * 2 * np.pi) / 360
-phi_err = (clear_arr(data["phi err [°]"].to_numpy()) * 2 * 10 * np.pi) / 360
+phi = remove_stuff((clear_arr(data["delta_phi [°]"].to_numpy()) * 2 * np.pi) / 360)
+phi_err = remove_stuff((clear_arr(data["phi err [°]"].to_numpy()) * 2 * 10 * np.pi) / 360)
 
 # First transfer function (res / gen) phase
-chi = (clear_arr(data["delta_chi [°]"].to_numpy()) * 2 * np.pi) / 360
-chi_err = (clear_arr(data["chi err [°]"].to_numpy()) * 2 * 10 * np.pi) / 360
+chi = remove_stuff((clear_arr(data["delta_chi [°]"].to_numpy()) * 2 * np.pi) / 360)
+chi_err = remove_stuff((clear_arr(data["chi err [°]"].to_numpy()) * 2 * 10 * np.pi) / 360)
 
 
 ###########################################################
@@ -123,11 +126,11 @@ def main():
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
     plt.errorbar(omegas, absH1, absH1err, label = "Label", linestyle = "", marker = "o", c = "#151515")
-    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] + 1_000, 10_000)
+    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
     plt.plot(lnsp, model_mod_H1(lnsp, *m1.values), label = "Label model", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
-    plt.ylabel("H1 mod")
+    plt.ylabel("$|H|$", rotation = "horizontal")
 
     plt.xscale("log")
     # plt.yscale("log")
@@ -147,11 +150,11 @@ def main():
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
     plt.errorbar(omegas, absH2, absH2err, label = "Label", linestyle = "", marker = "o", c = "#151515")
-    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] + 1_000, 10_000)
+    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
     plt.plot(lnsp, model_mod_H2(lnsp, *m2.values), label = "Label model", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
-    plt.ylabel("H2 mod")
+    plt.ylabel("$|H|$", rotation = "horizontal")
 
     plt.xscale("log")
     # plt.yscale("log")
@@ -172,11 +175,11 @@ def main():
     print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
     
     plt.errorbar(omegas, phi, phi_err, label = "Label", linestyle = "", marker = "o", c = "#151515")
-    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] + 1_000, 10_000)
+    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
     plt.plot(lnsp, model_phase_H1(lnsp, *m3.values), label = "Label model", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
-    plt.ylabel("H1 phase")
+    plt.ylabel("$\\angle H$", rotation = "horizontal")
 
     plt.xscale("log")
     # plt.yscale("log")
@@ -196,11 +199,11 @@ def main():
     print(f"Pval:\t{1. - chi2.cdf(m4.fval, df = m4.ndof)}")
     
     plt.errorbar(omegas, chi, chi_err, label = "Label", linestyle = "", marker = "o", c = "#151515")
-    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] + 1_000, 10_000)
+    lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
     plt.plot(lnsp, model_phase_H2(lnsp, *m4.values), label = "Label model", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
-    plt.ylabel("H2 phase")
+    plt.ylabel("$\\angle H$", rotation = "horizontal")
 
     plt.xscale("log")
     # plt.yscale("log")
