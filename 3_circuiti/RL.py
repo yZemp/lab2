@@ -44,13 +44,13 @@ temp_ind_err = clear_arr(data["ind err [V]"].to_numpy())
 temp_gen_err = clear_arr(data["gen err [V]"].to_numpy())
 absH2err = remove_stuff(np.sqrt(np.power(temp_ind_err / temp_gen, 2) + np.power((temp_ind * temp_gen_err) / np.power(temp_gen, 2), 2)))
 
-errscale = 12
+errscale = 20
 
 # First transfer function (res / gen) phase
 phi = remove_stuff((clear_arr(data["delta_phi [°]"].to_numpy()) * 2 * np.pi) / 360)
 phi_err = remove_stuff((clear_arr(data["phi err [°]"].to_numpy()) * 2 * errscale * np.pi) / 360)
 
-# First transfer function (res / gen) phase
+# First transfer function (ind / gen) phase
 chi = remove_stuff((clear_arr(data["delta_chi [°]"].to_numpy()) * 2 * np.pi) / 360)
 chi_err = remove_stuff((clear_arr(data["chi err [°]"].to_numpy()) * 2 * errscale * np.pi) / 360)
 
@@ -64,19 +64,23 @@ R = 10_000 # TBD
 def model_mod_H1(omega, A, B, L, Rl):
     temp = omega * L
     return A * np.sqrt(np.power(R, 2) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2))) + B
+    # return np.sqrt(np.power(R, 2) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2))) + B
     
 def model_mod_H2(omega, A, B, L, Rl):
     temp = omega * L
     return A * np.sqrt(np.power(Rl, 2) + np.power(temp, 2)) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2)) + B
+    # return np.sqrt(np.power(Rl, 2) + np.power(temp, 2)) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2)) + B
     
 
 def model_phase_H1(omega, A, B, L, Rl):
     temp = omega * L
     return A * ( - np.arctan(temp / (R + Rl))) + B
+    # return ( - np.arctan(temp / (R + Rl))) + B
 
 def model_phase_H2(omega, A, B, L, Rl):
     temp = omega * L
     return A * (np.arctan(temp / Rl) - np.arctan(temp / (R + Rl))) + B
+    # return (np.arctan(temp / Rl) - np.arctan(temp / (R + Rl))) + B
 
 
 ###########################################################
@@ -101,7 +105,6 @@ def interp_mod_H2(x, y, yerr, func = model_mod_H2):
     m.hesse()
     return m
 
-
 def interp_phase_H1(x, y, yerr, func = model_phase_H1):
     my_cost = cost.LeastSquares(x, y, yerr, func)
     m = Minuit(my_cost, 1, .1, 1e-3, 60)
@@ -110,8 +113,6 @@ def interp_phase_H1(x, y, yerr, func = model_phase_H1):
     m.migrad()
     m.hesse()
     return m
-
-
 
 def interp_phase_H2(x, y, yerr, func = model_phase_H2):
     my_cost = cost.LeastSquares(x, y, yerr, func)
@@ -132,9 +133,9 @@ def main():
     print(m1.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m1.fval, df = m1.ndof)}")
     
-    plt.errorbar(omegas, absH1, absH1err, label = "Label", linestyle = "", marker = "o", c = "#151515")
+    plt.errorbar(omegas, absH1, absH1err, label = "Data", linestyle = "", marker = "o", c = "#151515")
     lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
-    plt.plot(lnsp, model_mod_H1(lnsp, *m1.values), label = "Label model", c = "#a515d5")
+    plt.plot(lnsp, model_mod_H1(lnsp, *m1.values), label = "$|H_R|$", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
     plt.ylabel("$|H|$", rotation = "horizontal")
@@ -145,7 +146,7 @@ def main():
     plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m1.fval / m1.ndof):.3f}, P-value: {1. - chi2.cdf(m1.fval, df = m1.ndof):.4f}")
     # plt.plot([], [], ' ', label = f"A = {m1.values[0]:.3f} $\pm$ {m1.errors[0]:.3f}")
     # plt.plot([], [], ' ', label = f"B = {m1.values[1]:.3f} $\pm$ {m1.errors[1]:.3f}")
-    plt.plot([], [], ' ', label = f"$L = (${m1.values[2] * 1e3:.1f} $\pm$ {m1.errors[2] * 1e3:.1f}$)x10^{-3}$")
+    plt.plot([], [], ' ', label = f"$L = (${m1.values[2] * 1e3:.0f} $\pm$ {m1.errors[2] * 1e3:.0f}$)x10^{-3}$")
 
     plt.legend()
     plt.show()
@@ -156,9 +157,9 @@ def main():
     print(m2.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m2.fval, df = m2.ndof)}")
     
-    plt.errorbar(omegas, absH2, absH2err, label = "Label", linestyle = "", marker = "o", c = "#151515")
+    plt.errorbar(omegas, absH2, absH2err, label = "Data", linestyle = "", marker = "o", c = "#151515")
     lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
-    plt.plot(lnsp, model_mod_H2(lnsp, *m2.values), label = "Label model", c = "#a515d5")
+    plt.plot(lnsp, model_mod_H2(lnsp, *m2.values), label = "$|H_L|$", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
     plt.ylabel("$|H|$", rotation = "horizontal")
@@ -169,7 +170,7 @@ def main():
     plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m2.fval / m2.ndof):.3f}, P-value: {1. - chi2.cdf(m2.fval, df = m2.ndof):.4f}")
     # plt.plot([], [], ' ', label = f"A = {m2.values[0]:.3f} $\pm$ {m2.errors[0]:.3f}")
     # plt.plot([], [], ' ', label = f"B = {m2.values[1]:.3f} $\pm$ {m2.errors[1]:.3f}")
-    plt.plot([], [], ' ', label = f"$L = (${m2.values[2] * 1e3:.1f} $\pm$ {m2.errors[2] * 1e3:.1f}$)x10^{-3}$")
+    plt.plot([], [], ' ', label = f"$L = (${m2.values[2] * 1e3:.0f} $\pm$ {m2.errors[2] * 1e3:.0f}$)x10^{-3}$")
 
     plt.legend()
     plt.show()
@@ -181,9 +182,9 @@ def main():
     print(m3.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m3.fval, df = m3.ndof)}")
     
-    plt.errorbar(omegas, phi, phi_err, label = "Label", linestyle = "", marker = "o", c = "#151515")
+    plt.errorbar(omegas, phi, phi_err, label = "Data", linestyle = "", marker = "o", c = "#151515")
     lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
-    plt.plot(lnsp, model_phase_H1(lnsp, *m3.values), label = "Label model", c = "#a515d5")
+    plt.plot(lnsp, model_phase_H1(lnsp, *m3.values), label = "$\\angle H_R$", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
     plt.ylabel("$\\angle H$", rotation = "horizontal")
@@ -205,9 +206,9 @@ def main():
     print(m4.migrad())
     print(f"Pval:\t{1. - chi2.cdf(m4.fval, df = m4.ndof)}")
     
-    plt.errorbar(omegas, chi, chi_err, label = "Label", linestyle = "", marker = "o", c = "#151515")
+    plt.errorbar(omegas, chi, chi_err, label = "Data", linestyle = "", marker = "o", c = "#151515")
     lnsp = np.linspace(omegas[0] - 1_000, omegas[-1] * 2, 10_000)
-    plt.plot(lnsp, model_phase_H2(lnsp, *m4.values), label = "Label model", c = "#a515d5")
+    plt.plot(lnsp, model_phase_H2(lnsp, *m4.values), label = "$\\angle H_L$", c = "#a515d5")
 
     plt.xlabel("Omega [Rad / s]")
     plt.ylabel("$\\angle H$", rotation = "horizontal")
@@ -218,7 +219,7 @@ def main():
     plt.plot([], [], ' ', label = f"$\\chi^2_v$: {(m4.fval / m4.ndof):.3f}, P-value: {1. - chi2.cdf(m4.fval, df = m4.ndof):.4f}")
     # plt.plot([], [], ' ', label = f"A = {m4.values[0]:.3f} $\pm$ {m4.errors[0]:.3f}")
     # plt.plot([], [], ' ', label = f"B = {m4.values[1]:.3f} $\pm$ {m4.errors[1]:.3f}")
-    plt.plot([], [], ' ', label = f"$L = (${m4.values[2] * 1e3:.1f} $\pm$ {m4.errors[2] * 1e3:.1f}$)x10^{-3}$")
+    plt.plot([], [], ' ', label = f"$L = (${m4.values[2] * 1e3:.2f} $\pm$ {m4.errors[2] * 1e3:.2f}$)x10^{-3}$")
 
     plt.legend()
     plt.show()
