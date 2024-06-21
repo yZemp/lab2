@@ -63,20 +63,20 @@ R = 10_000 # TBD
 
 def model_mod_H1(omega, A, B, L, Rl):
     temp = omega * L
-    return A * np.sqrt(np.power(Rl, 2) + np.power(temp, 2)) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2)) + B
+    return A * np.sqrt(np.power(R, 2) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2))) + B
     
 def model_mod_H2(omega, A, B, L, Rl):
     temp = omega * L
-    return A * np.sqrt(np.power(R, 2) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2))) + B
+    return A * np.sqrt(np.power(Rl, 2) + np.power(temp, 2)) / np.sqrt(np.power(R + Rl, 2) + np.power(temp, 2)) + B
     
 
 def model_phase_H1(omega, A, B, L, Rl):
     temp = omega * L
-    return A * (np.arctan(temp / Rl) - np.arctan(temp / (R + Rl))) + B
+    return A * ( - np.arctan(temp / (R + Rl))) + B
 
 def model_phase_H2(omega, A, B, L, Rl):
     temp = omega * L
-    return A * ( - np.arctan(temp / (R + Rl))) + B
+    return A * (np.arctan(temp / Rl) - np.arctan(temp / (R + Rl))) + B
 
 
 ###########################################################
