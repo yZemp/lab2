@@ -25,7 +25,7 @@ import numpy as np
 # Zero
 
 
-def find_zero (
+def find_zero(
     g,              # funzione di cui trovare lo zero
     xMin,           # minimo dell'intervallo          
     xMax,           # massimo dell'intervallo         
@@ -43,7 +43,7 @@ def find_zero (
     
 
 
-def find_zero_recursive (
+def find_zero_recursive(
     g,              # funzione di cui trovare lo zero  
     xMin,           # minimo dell'intervallo            
     xMax,           # massimo dell'intervallo          
@@ -54,8 +54,8 @@ def find_zero_recursive (
     '''
     xAve = 0.5 * (xMax + xMin)
     if ((xMax - xMin) < prec): return xAve ;
-    if (g (xAve) * g (xMin) > 0.): return find_zero (g, xAve, xMax, prec) ;
-    else                         : return find_zero (g, xMin, xAve, prec) ;
+    if (g (xAve) * g (xMin) > 0.): return find_zero(g, xAve, xMax, prec) ;
+    else                         : return find_zero(g, xMin, xAve, prec) ;
     
 
 
@@ -64,7 +64,7 @@ def find_zero_recursive (
 # MIN
 
 
-def find_min_goldenratio (
+def find_min_goldenratio(
     g,              # funzione di cui trovare il minimo
     x0,             # estremo dell'intervallo          
     x1,             # altro estremo dell'intervallo         
@@ -97,7 +97,7 @@ def find_min_goldenratio (
 
 
 
-def find_min_goldenratio_recursive (
+def find_min_goldenratio_recursive(
     g,              # funzione di cui trovare il minimo
     x0,             # estremo dell'intervallo          
     x1,             # altro estremo dell'intervallo         
@@ -114,15 +114,15 @@ def find_min_goldenratio_recursive (
     larghezza = abs (x1 - x0)
 
     if (larghezza < prec)  : return ( x0 + x1) / 2.
-    elif (g (x3) > g (x2)) : return sezioneAureaMin_ricorsiva (g, x3, x1, prec)
-    else                   : return sezioneAureaMin_ricorsiva (g, x0, x2, prec)   
+    elif (g (x3) > g (x2)) : return find_min_goldenratio_recursive(g, x3, x1, prec)
+    else                   : return find_min_goldenratio_recursive(g, x0, x2, prec)   
 
 
 
 ##############################################################
 # Max
 
-def find_max_goldenratio (
+def find_max_goldenratio(
     g,              # funzione di cui trovare il massimo
     x0,             # estremo dell'intervallo          
     x1,             # altro estremo dell'intervallo         
@@ -155,7 +155,7 @@ def find_max_goldenratio (
 
 
 
-def find_max_goldenratio_recursive (
+def find_max_goldenratio_recursive(
     g,              # funzione di cui trovare il massimo
     x0,             # estremo dell'intervallo          
     x1,             # altro estremo dell'intervallo         
@@ -172,8 +172,8 @@ def find_max_goldenratio_recursive (
     larghezza = abs (x1 - x0)
 
     if (larghezza < prec)  : return ( x0 + x1) / 2.
-    elif (g (x3) < g (x2)) : return sezioneAureaMax_ricorsiva (g, x3, x1, prec)
-    else                   : return sezioneAureaMax_ricorsiva (g, x0, x2, prec)   
+    elif (g (x3) < g (x2)) : return find_max_goldenratio_recursive(g, x3, x1, prec)
+    else                   : return find_max_goldenratio_recursive(g, x0, x2, prec)   
 
 
 
